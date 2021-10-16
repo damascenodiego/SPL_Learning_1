@@ -187,8 +187,8 @@ public class ProductsAdaptiveLearning {
 					features_i.add(f.toString());
 				}
 
-				System.out.println(i);
-				System.out.println(features_i);
+//				System.out.println(i);
+//				System.out.println(features_i);
 
 				for (int j = 1; j < (products_num + 1); j++) {
 					// Feature list of config_j
@@ -203,10 +203,6 @@ public class ProductsAdaptiveLearning {
 						features_j.add(f.toString());
 					}
 
-//					System.out.println(all_features);
-//					System.out.println(features_i);
-//					System.out.println(features_j);
-
 					if (i == j) {
 						products_similarity[i - 1][j - 1] = 1;
 					} else {
@@ -216,7 +212,7 @@ public class ProductsAdaptiveLearning {
 				}
 			}
 
-			System.out.println("\n" + Arrays.deepToString(products_similarity));
+//			System.out.println("\n" + Arrays.deepToString(products_similarity));
 
 			int[] selected_products = new int[products_num];
 
@@ -239,14 +235,16 @@ public class ProductsAdaptiveLearning {
 			int productIndex_1 = products.get(0);
 
 			selected_products[productIndex_1 - 1] = 1;
-			System.out.println("selected");
-			System.out.println(Arrays.toString(selected_products));
+//			System.out.println("selected");
+//			System.out.println(Arrays.toString(selected_products));
 
 			String fixedLengthString_1 = convertTofixedLengthString(productIndex_1);
 			String productFileName_1 = fixedLengthString_1 + "_text.txt";
 			File productFile_1 = new File(products_dir, productFileName_1);
-			System.out.println(productFile_1);
+//			System.out.println(productFile_1);
 
+			System.out.println("Cost vectors after laerning 1 product:");
+			
 			statistics_adaptive = LearnFSM(productFile_1, obsTable, learningAlgorithm, out_dir, line, rnd_seed,
 					statistics_adaptive, 1, logger_1);
 			statistics_nonadaptive = LearnFSM(productFile_1, obsTable, learningAlgorithm, out_dir, line, rnd_seed,
@@ -263,12 +261,12 @@ public class ProductsAdaptiveLearning {
 						previous_product, product_order, ot_order);
 				int productIndex_2 = products_2.get(0);
 				selected_products[productIndex_2 - 1] = 1;
-				System.out.println(Arrays.toString(selected_products));
+//				System.out.println(Arrays.toString(selected_products));
 
 				String fixedLengthString_2 = convertTofixedLengthString(productIndex_2);
 				String productFileName_2 = fixedLengthString_2 + "_text.txt";
 				File productFile_2 = new File(products_dir, productFileName_2);
-				System.out.println(productFile_2);
+//				System.out.println(productFile_2);
 
 				if (product_selection_method == "serial_random") {
 					fixedLengthString_1 = convertTofixedLengthString(previous_product);
@@ -278,8 +276,9 @@ public class ProductsAdaptiveLearning {
 					obsTableFileName = ot_fixedLengthString + "_ot";
 				}
 				obsTable = new File(out_dir, obsTableFileName);
-				System.out.println(obsTable);
+//				System.out.println(obsTable);
 
+				System.out.println("\n\n\nCost vectors after laerning " + (i + 2) + " products:");
 				
 				statistics_adaptive = LearnFSM(productFile_2, obsTable, learningAlgorithm_2, out_dir, line, rnd_seed,
 						statistics_adaptive, 1, logger_1);
@@ -291,8 +290,8 @@ public class ProductsAdaptiveLearning {
 
 			}
 			
-			System.out.println(product_selection_method);
-			System.out.println(learningAlgorithm_2);
+			System.out.println("Product selection method: " + product_selection_method);
+			System.out.println("Adaptive learning algorithm: " + learningAlgorithm_2);
 
 		}
 
@@ -303,7 +302,7 @@ public class ProductsAdaptiveLearning {
 			exp.printStackTrace();
 		}
 
-		System.out.println("Finished");
+//		System.out.println("Finished");
 
 	}
 
@@ -382,8 +381,8 @@ public class ProductsAdaptiveLearning {
 				if (num == random_num) {
 //					System.out.println(k +1);
 					first_num = k + 1;
-					System.out.println("first_num");
-					System.out.println(first_num);
+//					System.out.println("first_num");
+//					System.out.println(first_num);
 					return_list.add(first_num);
 					break;
 				}
@@ -396,10 +395,10 @@ public class ProductsAdaptiveLearning {
 
 			else {
 				if (method.equals("total_random")) {
-					System.out.println("Random num");
+//					System.out.println("Random num");
 					selected_p_count = p_num - remained_p_count;
 					int random_num_2 = rand.nextInt(selected_p_count) + 1;
-					System.out.println(random_num_2);
+//					System.out.println(random_num_2);
 					num = 0;
 					for (int k = 0; k < p_num; k++) {
 						if (selected_p_array[k] == 1) {
@@ -408,8 +407,8 @@ public class ProductsAdaptiveLearning {
 						if (num == random_num_2) {
 							second_num = k + 1;
 							return_list.add(second_num);
-							System.out.println("second_num");
-							System.out.println(second_num);
+//							System.out.println("second_num");
+//							System.out.println(second_num);
 							return return_list;
 						}
 					}
@@ -434,18 +433,18 @@ public class ProductsAdaptiveLearning {
 				}
 			}
 			first_num = m_sum_sim_i + 1;
-			System.out.println("first_num");
-			System.out.println(first_num);
+//			System.out.println("first_num");
+//			System.out.println(first_num);
 			return_list.add(first_num);
 
 			if (previous_p == -1) {
 				second_num = previous_p;
-				System.out.println("second_num");
-				System.out.println(second_num);
+//				System.out.println("second_num");
+//				System.out.println(second_num);
 				return_list.add(second_num);
 				return return_list;
 			} else {
-				System.out.println(Arrays.toString(p_similarity[m_sum_sim_i]));
+//				System.out.println(Arrays.toString(p_similarity[m_sum_sim_i]));
 				double m_sim = 0;
 				int m_sim_j = 0;
 				for (int j = 0; j < p_num; j++) {
@@ -457,21 +456,21 @@ public class ProductsAdaptiveLearning {
 					}
 				}
 				second_num = m_sim_j + 1;
-				System.out.println("second_num");
-				System.out.println(second_num);
+//				System.out.println("second_num");
+//				System.out.println(second_num);
 				return_list.add(second_num);
 				return return_list;
 			}
 		}
 		if (method.equals("specified_order")) {
 			first_num = product_order_1[selected_p_count];
-			System.out.println("first_num");
-			System.out.println(first_num);
+//			System.out.println("first_num");
+//			System.out.println(first_num);
 			return_list.add(first_num);
 
 			second_num = ot_order_1[selected_p_count];
-			System.out.println("second_num");
-			System.out.println(second_num);
+//			System.out.println("second_num");
+//			System.out.println(second_num);
 			return_list.add(second_num);
 			return return_list;
 		}
@@ -951,7 +950,7 @@ public class ProductsAdaptiveLearning {
 					String ot_name = fileName.replace("_text", "_ot");
 					File ot_file_2 = new File(ot_out_dir, ot_name);
 					otUtils_1.writeOT(experiment_pair.getLearner().getObservationTable(), ot_file_2);
-					System.out.println("The observation table and the learned FSM are saved to the disk.");
+//					System.out.println("The observation table and the learned FSM are saved to the disk.");
 
 					// save observation FSM as a .txt file
 					String learned_fsm_name = fileName.replace("_text", "_learnedFsm") + ".txt";
