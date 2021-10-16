@@ -1,0 +1,21 @@
+High	Normal
+s0 -- setReady/1 -> s0
+s0 -- setRunning/1 -> s0
+s0 -- highLevel/1 -> s0
+s0 -- isStopped/1 -> s0
+s0 -- isRunning/1 -> s0
+s0 -- receiveMsg/0 -> s1
+s0 -- isReady/1 -> s0
+s0 -- end/1 -> s0
+s0 -- isNotReady/1 -> s0
+s0 -- pumpStart/1 -> s0
+s1 -- setReady/1 -> s1
+s1 -- setRunning/1 -> s1
+s1 -- highLevel/1 -> s1
+s1 -- isStopped/1 -> s1
+s1 -- isRunning/1 -> s1
+s1 -- receiveMsg/1 -> s1
+s1 -- isReady/1 -> s1
+s1 -- end/1 -> s1
+s1 -- isNotReady/1 -> s1
+s1 -- pumpStart/1 -> s1

@@ -1,0 +1,39 @@
+digraph g {
+
+	s0 [shape="circle" label="0"];
+	s1 [shape="circle" label="1"];
+	s0 -> s0 [label="setReady / 1"];
+	s0 -> s0 [label="highLevel / 1"];
+	s0 -> s0 [label="isStopped / 1"];
+	s0 -> s0 [label="isNotRunning / 1"];
+	s0 -> s0 [label="pumpStop / 1"];
+	s0 -> s1 [label="receiveMsg / 0"];
+	s0 -> s0 [label="isReady / 1"];
+	s0 -> s0 [label="setLowStop / 1"];
+	s0 -> s0 [label="isNotReady / 1"];
+	s0 -> s0 [label="setRunning / 1"];
+	s0 -> s0 [label="lowLevel / 1"];
+	s0 -> s0 [label="isRunning / 1"];
+	s0 -> s0 [label="end / 1"];
+	s0 -> s0 [label="isLowStop / 1"];
+	s0 -> s0 [label="pumpStart / 1"];
+	s1 -> s1 [label="setReady / 1"];
+	s1 -> s1 [label="highLevel / 1"];
+	s1 -> s1 [label="isStopped / 1"];
+	s1 -> s1 [label="isNotRunning / 1"];
+	s1 -> s1 [label="pumpStop / 1"];
+	s1 -> s1 [label="receiveMsg / 1"];
+	s1 -> s1 [label="isReady / 1"];
+	s1 -> s1 [label="setLowStop / 1"];
+	s1 -> s1 [label="isNotReady / 1"];
+	s1 -> s1 [label="setRunning / 1"];
+	s1 -> s1 [label="lowLevel / 1"];
+	s1 -> s1 [label="isRunning / 1"];
+	s1 -> s1 [label="end / 1"];
+	s1 -> s1 [label="isLowStop / 1"];
+	s1 -> s1 [label="pumpStart / 1"];
+
+__start0 [label="" shape="none" width="0" height="0"];
+__start0 -> s0;
+
+}
