@@ -617,6 +617,7 @@ public class CompareLearningMethods {
 			// turn on time profiling
 			experiment.setProfile(true);
 
+			
 			// uncomment one of the following lines:
 //			experiment.setLogModels(true);
 			experiment.setLogOT(true);
