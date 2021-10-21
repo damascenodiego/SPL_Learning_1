@@ -116,13 +116,13 @@ public class CompareLearningMethods {
 
 		int[] sul2_nonadaptive = new int[5];
 		Arrays.fill(sul2_nonadaptive, 0);
-		
+
 		int[] sul2_adaptive_v0 = new int[5];
 		Arrays.fill(sul2_adaptive_v0, 0);
-		
+
 		int[] sul2_adaptive_v1 = new int[5];
 		Arrays.fill(sul2_adaptive_v1, 0);
-		
+
 		int[] sul2_adaptive_v2 = new int[5];
 		Arrays.fill(sul2_adaptive_v2, 0);
 
@@ -148,20 +148,24 @@ public class CompareLearningMethods {
 			File out_dir = new File(line.getOptionValue(OUT));
 			String learnAlgorithm = "lstar";
 
+			// create log
+			System.setProperty("logdir", out_dir.getAbsolutePath());
+			LearnLogger logger_1 = LearnLogger.getLogger(Infer_LearnLib.class);
+
 			System.out.println("\nSUL1_Nonadaptive method:");
 			sul1_nonadaptive = LearnProductFSM(sul_1, obsTable, learnAlgorithm, out_dir, line, rnd_seed,
-					sul1_nonadaptive, 1);
-			
+					sul1_nonadaptive, 1, logger_1);
+
 			System.out.println("\nSUL2_Nonadaptive method:");
 			sul2_nonadaptive = LearnProductFSM(sul_2, obsTable, learnAlgorithm, out_dir, line, rnd_seed,
-					sul2_nonadaptive, 0);
-			
+					sul2_nonadaptive, 0, logger_1);
+
 			String sul_1_string = sul_1.getName();
-			obsTable = new File (out_dir, sul_1_string.replaceAll("_text.txt", "_ot"));
+			obsTable = new File(out_dir, sul_1_string.replaceAll("_text.txt", "_ot"));
 //			System.out.println(obsTable);
-			
+
 			String learnAlgorithm_2 = "";
-			
+
 //			learnAlgorithm_2 = "dlstar_v0";
 //			System.out.println("\nSUL2_Adaptive method:");
 //			sul2_adaptive_v0 = LearnProductFSM(sul_2, obsTable, learnAlgorithm_2, out_dir, line, rnd_seed,
@@ -171,11 +175,11 @@ public class CompareLearningMethods {
 //			System.out.println("\nSUL2_Adaptive method:");
 //			sul2_adaptive_v1 = LearnProductFSM(sul_2, obsTable, learnAlgorithm_2, out_dir, line, rnd_seed,
 //					sul2_adaptive_v1, 0);
-			
+
 			learnAlgorithm_2 = "dlstar_v2";
 			System.out.println("\nSUL2_Adaptive method:");
 			sul2_adaptive_v2 = LearnProductFSM(sul_2, obsTable, learnAlgorithm_2, out_dir, line, rnd_seed,
-					sul2_adaptive_v2, 0);
+					sul2_adaptive_v2, 0, logger_1);
 
 		}
 
@@ -474,15 +478,10 @@ public class CompareLearningMethods {
 
 		List<Word<String>> initPrefixes = new ArrayList<>(my_ot.getPrefixes());
 		List<Word<String>> initSuffixes = new ArrayList<>(my_ot.getSuffixes());
-
+		
 		// construct DL*M v2 instance
 		ExtensibleDLStarMealy<String, Word<String>> learner = new ExtensibleDLStarMealy<String, Word<String>>(
-				mealyss.getInputAlphabet(),
-				mqOracle,
-				initPrefixes,
-				initSuffixes,
-				handler,
-				strategy);
+				mealyss.getInputAlphabet(), mqOracle, initPrefixes, initSuffixes, handler, strategy);
 
 		// The experiment will execute the main loop of active learning
 		MealyExperiment<String, Word<String>> experiment = new MealyExperiment<String, Word<String>>(learner, eqOracle,
@@ -505,12 +504,8 @@ public class CompareLearningMethods {
 	}
 
 	private static int[] LearnProductFSM(File sul_file, File ot_file, String learnAlgorithm_1, File out_dir_file,
-			CommandLine line_1, Random rnd_seed_1, int[] statistics_array, int saveOT) {
+			CommandLine line_1, Random rnd_seed_1, int[] statistics_array, int saveOT, LearnLogger logger) {
 		try {
-			// create log
-			System.setProperty("logdir", out_dir_file.getAbsolutePath());
-			LearnLogger logger = LearnLogger.getLogger(Infer_LearnLib.class);
-
 			// set closing strategy
 			ClosingStrategy<Object, Object> strategy = getClosingStrategy(line_1.getOptionValue(CLOS));
 
@@ -617,7 +612,6 @@ public class CompareLearningMethods {
 			// turn on time profiling
 			experiment.setProfile(true);
 
-			
 			// uncomment one of the following lines:
 //			experiment.setLogModels(true);
 			experiment.setLogOT(true);
@@ -684,14 +678,14 @@ public class CompareLearningMethods {
 					File learned_fsm_file = new File(ot_out_dir, learned_fsm_name);
 					String header = "";
 					FeaturedMealyUtils.getInstance().saveFSM_kiss(mealyss, learned_fsm_file, header);
-					
+
 					// save FSM as a dot file
-					String learned_fsm_dot_name = ot_out_dir.toString() + "\\" + fileName.replaceFirst("_text", "_learnedFsmDot.dot");
+					String learned_fsm_dot_name = ot_out_dir.toString() + "\\"
+							+ fileName.replaceFirst("_text", "_learnedFsmDot.dot");
 					BufferedWriter bw = new BufferedWriter(new FileWriter(learned_fsm_dot_name));
 					GraphDOT.write(mealyss, bw);
 					bw.close();
 				}
-				
 
 				System.out.println(Arrays.toString(statistics_array));
 				System.out.println("[Rounds, MQ [Resets], MQ [Symbols], EQ [Resets], EQ [Symbols]]");

@@ -757,12 +757,7 @@ public class ProductsAdaptiveLearning {
 
 		// construct DL*M v2 instance
 		ExtensibleDLStarMealy<String, Word<String>> learner = new ExtensibleDLStarMealy<String, Word<String>>(
-				mealyss.getInputAlphabet(),
-				mqOracle,
-				initPrefixes,
-				initSuffixes,
-				handler,
-				strategy);
+				mealyss.getInputAlphabet(), mqOracle, initPrefixes, initSuffixes, handler, strategy);
 
 		// The experiment will execute the main loop of active learning
 		MealyExperiment<String, Word<String>> experiment = new MealyExperiment<String, Word<String>>(learner, eqOracle,
@@ -893,7 +888,6 @@ public class ProductsAdaptiveLearning {
 			// turn on time profiling
 			experiment.setProfile(true);
 
-			
 			// uncomment one of the following lines
 //			experiment.setLogModels(true):
 			experiment.setLogOT(true);
@@ -963,7 +957,8 @@ public class ProductsAdaptiveLearning {
 					FeaturedMealyUtils.getInstance().saveFSM_kiss(mealyss, learned_fsm_file, header);
 
 					// save FSM as a dot file
-					String learned_fsm_dot_name = ot_out_dir.toString() + "\\" + fileName.replaceFirst("_text", "_learnedFsmDot.dot");
+					String learned_fsm_dot_name = ot_out_dir.toString() + "\\"
+							+ fileName.replaceFirst("_text", "_learnedFsmDot.dot");
 					BufferedWriter bw = new BufferedWriter(new FileWriter(learned_fsm_dot_name));
 					GraphDOT.write(mealyss, bw);
 					bw.close();
