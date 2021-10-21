@@ -1,6 +1,8 @@
 package com.automatalearning1.spl;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -25,7 +27,6 @@ import br.usp.icmc.labes.mealyInference.utils.EquivEQOracle.RandomWMethodHypEQOr
 import br.usp.icmc.labes.mealyInference.utils.EquivEQOracle.WMethodHypEQOracle;
 import br.usp.icmc.labes.mealyInference.utils.EquivEQOracle.WpMethodHypEQOracle;
 import de.learnlib.algorithms.dlstar.mealy.ExtensibleDLStarMealy;
-import de.learnlib.algorithms.dlstar.mealy.ExtensibleDLStarMealyBuilder;
 import de.learnlib.algorithms.lstar.ce.ObservationTableCEXHandler;
 import de.learnlib.algorithms.lstar.ce.ObservationTableCEXHandlers;
 import de.learnlib.algorithms.lstar.closing.ClosingStrategies;
@@ -50,13 +51,14 @@ import de.learnlib.oracle.equivalence.WMethodEQOracle;
 import de.learnlib.oracle.equivalence.WpMethodEQOracle;
 import de.learnlib.oracle.equivalence.mealy.RandomWalkEQOracle;
 import de.learnlib.oracle.membership.SULOracle;
-import de.learnlib.util.Experiment.MealyExperiment;
+import de.learnlib.util.ExperimentDebug.MealyExperiment;
 import de.learnlib.util.statistics.SimpleProfiler;
 import de.ovgu.featureide.fm.core.base.IFeature;
 import de.ovgu.featureide.fm.core.base.IFeatureModel;
 import de.ovgu.featureide.fm.core.io.manager.FeatureModelManager;
 import net.automatalib.automata.transducers.MealyMachine;
 import net.automatalib.automata.transducers.impl.compact.CompactMealy;
+import net.automatalib.serialization.dot.GraphDOT;
 import net.automatalib.words.Word;
 import uk.le.ac.ffsm.FeaturedMealyUtils;
 import uk.le.ac.fts.FtsUtils;
@@ -117,7 +119,7 @@ public class ProductsAdaptiveLearning {
 		int[] ot_order = { -1, 2, 2, 2, 2, 7, 4 };
 
 		try {
-			
+
 			// parse the command line arguments
 			CommandLine line = parser.parse(options, args);
 
@@ -222,13 +224,13 @@ public class ProductsAdaptiveLearning {
 //			String product_selection_method = "total_random";
 			String product_selection_method = "similarity";
 //			String product_selection_method = "specified_order";
-			
+
 			String learningAlgorithm = "lstar";
-			
+
 			String learningAlgorithm_2 = "dlstar_v2";
-			
+
 			String learningAlgorithm_3 = "lstar";
-			
+
 			// Set the first product to be learned
 			ArrayList<Integer> products = ProductIndex(selected_products, product_selection_method, products_similarity,
 					previous_product, product_order, ot_order);
@@ -244,7 +246,7 @@ public class ProductsAdaptiveLearning {
 //			System.out.println(productFile_1);
 
 			System.out.println("Cost vectors after laerning 1 product:");
-			
+
 			statistics_adaptive = LearnFSM(productFile_1, obsTable, learningAlgorithm, out_dir, line, rnd_seed,
 					statistics_adaptive, 1, logger_1);
 			statistics_nonadaptive = LearnFSM(productFile_1, obsTable, learningAlgorithm, out_dir, line, rnd_seed,
@@ -279,7 +281,7 @@ public class ProductsAdaptiveLearning {
 //				System.out.println(obsTable);
 
 				System.out.println("\n\n\nCost vectors after laerning " + (i + 2) + " products:");
-				
+
 				statistics_adaptive = LearnFSM(productFile_2, obsTable, learningAlgorithm_2, out_dir, line, rnd_seed,
 						statistics_adaptive, 1, logger_1);
 
@@ -289,7 +291,7 @@ public class ProductsAdaptiveLearning {
 				previous_product = productIndex_2;
 
 			}
-			
+
 			System.out.println("Product selection method: " + product_selection_method);
 			System.out.println("Adaptive learning algorithm: " + learningAlgorithm_2);
 
@@ -754,14 +756,13 @@ public class ProductsAdaptiveLearning {
 		List<Word<String>> initSuffixes = new ArrayList<>(my_ot.getSuffixes());
 
 		// construct DL*M v2 instance
-		ExtensibleDLStarMealyBuilder<String, Word<String>> builder = new ExtensibleDLStarMealyBuilder<String, Word<String>>();
-		builder.setAlphabet(mealyss.getInputAlphabet());
-		builder.setOracle(mqOracle);
-		builder.setInitialPrefixes(initPrefixes);
-		builder.setInitialSuffixes(initSuffixes);
-		builder.setCexHandler(handler);
-		builder.setClosingStrategy(strategy);
-		ExtensibleDLStarMealy<String, Word<String>> learner = builder.create();
+		ExtensibleDLStarMealy<String, Word<String>> learner = new ExtensibleDLStarMealy<String, Word<String>>(
+				mealyss.getInputAlphabet(),
+				mqOracle,
+				initPrefixes,
+				initSuffixes,
+				handler,
+				strategy);
 
 		// The experiment will execute the main loop of active learning
 		MealyExperiment<String, Word<String>> experiment = new MealyExperiment<String, Word<String>>(learner, eqOracle,
@@ -878,9 +879,10 @@ public class ProductsAdaptiveLearning {
 						"Reused queries [symbols]: " + ((SymbolCounterSUL) mq_sym).getStatisticalData().getCount());
 				break;
 			case "dlstar_v2":
-				if(handler == ObservationTableCEXHandlers.CLASSIC_LSTAR)  throw new Exception("DL*M requires "+ObservationTableCEXHandlers.RIVEST_SCHAPIRE+" CexH");
+				if (handler == ObservationTableCEXHandlers.CLASSIC_LSTAR)
+					throw new Exception("DL*M requires " + ObservationTableCEXHandlers.RIVEST_SCHAPIRE + " CexH");
 				logger.logConfig("Method: DL*M_v2");
-				experiment_pair = learningDLStarM_v2(mealyss, mqOracle, eqOracle, handler, strategy,ot_file);
+				experiment_pair = learningDLStarM_v2(mealyss, mqOracle, eqOracle, handler, strategy, ot_file);
 				break;
 			default:
 				throw new Exception("Invalid learning method selected: " + learningAlgorithm_1);
@@ -891,8 +893,9 @@ public class ProductsAdaptiveLearning {
 			// turn on time profiling
 			experiment.setProfile(true);
 
-			// enable logging of models
-			experiment.setLogModels(true);
+			// uncomment one of the following lines
+//			experiment.setLogModels(true):
+			experiment.setLogOT(true);
 
 			// run experiment
 			experiment.run();
@@ -953,16 +956,22 @@ public class ProductsAdaptiveLearning {
 //					System.out.println("The observation table and the learned FSM are saved to the disk.");
 
 					// save observation FSM as a .txt file
-					String learned_fsm_name = fileName.replace("_text", "_learnedFsm") + ".txt";
+					String learned_fsm_name = fileName.replace("_text", "_learnedFsm.txt");
 					File learned_fsm_file = new File(ot_out_dir, learned_fsm_name);
 					String header = "";
 					FeaturedMealyUtils.getInstance().saveFSM_kiss(mealyss, learned_fsm_file, header);
+
+					// save FSM as a dot file
+					String learned_fsm_dot_name = ot_out_dir.toString() + "\\" + fileName.replaceFirst("_text", "_learnedFsmDot.dot");
+					BufferedWriter bw = new BufferedWriter(new FileWriter(learned_fsm_dot_name));
+					GraphDOT.write(mealyss, bw);
+					bw.close();
+
 					System.out.println("Adaptive method:");
-				}
-				else {
+				} else {
 					System.out.println("Non-adaptive method:");
 				}
-				
+
 				System.out.println(Arrays.toString(statistics_array));
 				System.out.println("[Rounds, MQ [Resets], MQ [Symbols], EQ [Resets], EQ [Symbols]]\n");
 			}
